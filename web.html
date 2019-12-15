@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script src="animate.js"></script>
+	<style type="text/css">
+		*{
+			padding: 0;
+			margin: 0;
+		}
+		#left{
+			left: 30px;
+		}
+		ul.li{
+			list-style: none;
+		}
+		.box{
+			width: 1200px;
+			height: 382px;
+			border: 1px solid red;
+			margin: 100px auto;
+			position: relative;
+			overflow: hidden;
+		}
+		.slider{
+			width: 8400px;
+			position: absolute;
+			left: -1200px;
+		}
+		.slide{
+			width: 1200px;
+			overflow: hidden;
+			float: left;
+		}
+		.box>span{
+			display: block;
+			width: 30px;
+			height: 50px;
+			text-align: center;
+			cursor: pointer;
+			color: #ccc;
+			top: 175px;
+			line-height: 50px;
+			background: rgb(255,0,0) ;
+			font-size: 30px;
+			position: absolute;
+			/*display: none;*/
+			opacity: 0;  
+		}
+		#right{
+			right: 30px;
+		}
+		.nav{
+			list-style: none;
+			position:absolute;
+			left: 500px;
+			bottom: 20px;
+		}
+		.nav>li{
+			float: left;
+			width: 20px;
+			height: 20px;
+			background: #ccc;
+			cursor: pointer;
+			margin: 0 10px;
+			border-radius: 50%;
+		}
+		.nav .active{
+			background:red;
+		}
+		.box1{
+			width: 1320px;
+			height: 20px;
+		}
+		.box2{
+			float: left;
+		}
+		.box3{
+			float: right;
+			overflow: hidden;
+			width: 1300px;
+			height: 20px;
+			background-color: gray;
+		}
+		.img{
+			height: 20px;
+			width: 20px;
+		}
+		.warning{
+			color: red;
+			left: 20px;
+			position: relative;
+		}
+	</style>
+</head>
+<body>
+	<div class = "box1">
+		<div class="box2">
+			<img src="./images/a15.png" class="img">
+		</div>
+		<div class ="box3">
+			<p id = "warning" class = "warning">[温馨提示]最近有不少不法分子在网上骗人，请大家注意！！！</p>
+		</div>
+	</div>
+	<div class="box" id="box">
+		<div class="slider" id="slider">
+			<div class="slide"><img src="./images/b5.png" width="1200px" height="382px"></div>
+			<div class="slide"><img src="./images/b1.png" width="1200px" height="382px"></div>
+			<div class="slide"><img src="./images/b2.png" width="1200px" height="382px"></div>
+			<div class="slide"><img src="./images/b3.png" width="1200px" height="382px"></div>
+			<div class="slide"><img src="./images/b4.png" width="1200px" height="382px"></div>
+			<div class="slide"><img src="./images/b5.png" width="1200px" height="382px"></div>
+			<div class="slide"><img src="./images/b1.png" width="1200px" height="382px"></div>
+		</div>
+		<span id="left"> > </span>
+		<span id="right"> > </span>
+		<ul class="nav" id="nav">
+			<li class="active">&nbsp;1</li>
+			<li>&nbsp;2</li>
+			<li>&nbsp;3</li>
+			<li>&nbsp;4</li>
+			<li>&nbsp;5</li>
+		</ul>
+	</div>
+</body>
+<script>
+	var box = document.getElementById('box');
+	var oNavlist = document.getElementById('nav').children;
+	var slider = document.getElementById('slider');
+	var left = document.getElementById('left');
+	var right = document.getElementById('right');
+	var warning = document.getElementById('warning');
+	var left1 = 1300;
+	//文字轮播
+	setInterval(function(){
+		if(left1 == -450){
+			left1 = 1300;
+		}
+		left1 -= 1;
+		warning.style.left = left1 + 'px';
+	},10);
+	var index = 1;
+	var timer;
+	var isMoving = false;
+	//轮播下一张的函数
+	function next(){
+		if(isMoving){
+			return;
+		}
+		isMoving = true;	
+		index++;
+		navChange();
+		animate(slider,{left:-1200*index},function(){
+			if(index > 5){
+				slider.style.left="-1200px";
+				index = 1;
+			}
+			isMoving = false;
+		});
+	}
+	function prev(){
+		if(isMoving){
+			return;
+		}
+		index--;
+		navChange();
+		animate(slider,{left:-1200*index},function(){
+			if(index === 0){
+				slider.style.left=-1200*5+"px";
+				index = 5;
+			}
+			isMoving = false;
+		});
+	}
+	var timer = setInterval(next,2000);
+	//鼠标划入清定时器
+	box.onmouseover = function(){
+		animate(left,{opacity:50});
+		animate(right,{opacity:50});
+		clearInterval(timer);
+	}
+	//鼠标划出开定时器
+	box.onmouseout = function(){
+		animate(left,{opacity:0});
+		animate(right,{opacity:0});
+		timer = setInterval(next,2000);
+	}
+	right.onclick = next;
+	left.onclick = prev;
+	//小按钮点击事件
+	for(var i=0;i<oNavlist.length;i++){
+		oNavlist[i].idx = i;
+		oNavlist[i].onclick = function(){
+			index = this.idx + 1;
+			navChange();
+			animate(slider,{left:-1200*index});
+		}
+	}
+	//小按钮背景色切换
+	function navChange(){
+		for(var i = 0;i<oNavlist.length;i++){
+			oNavlist[i].className = '';
+		}
+		if(index>5){
+			oNavlist[0].className = 'active';
+		}else if(index===0){
+			oNavlist[4].className = 'active';
+		}else{
+			oNavlist[index-1].className = 'active';
+		}
+	}
+</script>
+</html>
